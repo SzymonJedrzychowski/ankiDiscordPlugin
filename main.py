@@ -30,6 +30,8 @@ def main():
             to_send = collection_wrapper.generate_welcome_message()
         elif content.startswith('$decks'):
             to_send = collection_wrapper.generate_decks_message()
+        elif content.startswith('$deck'):
+            to_send = collection_wrapper.select_deck(content[5:])
 
         if to_send:
             await message.channel.send(to_send)
