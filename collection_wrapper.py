@@ -1,7 +1,7 @@
 from os import path
 
 from anki.collection import Collection
-from anki.decks import DeckManager, DeckId
+from anki.decks import DeckManager
 
 
 class CollectionWrapper:
@@ -28,13 +28,26 @@ class CollectionWrapper:
         try:
             message_argument = int(message_argument)
         except:
-            return f"Incorrect parameter: {message_argument}"
+            return f'Incorrect parameter: {message_argument}'
 
         decks = self.__get_decks()
         if len(decks) >= message_argument > 0:
             self.deck = self.collection.decks.get(decks[message_argument - 1].id)
-            return f"Selected deck: {self.deck.get("id")} - {self.deck.get("name")}"
-        return f"Deck number out of range: {message_argument}"
+            self.collection.decks.set_current(self.deck.get('id'))
+            return f'Selected deck: {self.deck.get('id')} - {self.deck.get('name')}'
+
+        return f'Deck number out of range: {message_argument}'
+
+    def get_card(self):
+        if not self.deck:
+            return 'No deck selected.'
+
+        card = self.collection.sched.getCard()
+
+        if not card:
+            return 'No cards left.'
+
+        return card.note().fields[0]
 
     def __read_collection_file(self, file_path):
         if file_path.split('.')[-1] != 'anki2':

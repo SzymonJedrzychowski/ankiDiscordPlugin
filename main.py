@@ -32,6 +32,8 @@ def main():
             to_send = collection_wrapper.generate_decks_message()
         elif content.startswith('$deck'):
             to_send = collection_wrapper.select_deck(content[5:])
+        elif content.startswith('$card'):
+            to_send = collection_wrapper.get_card()
 
         if to_send:
             await message.channel.send(to_send)
