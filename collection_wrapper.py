@@ -6,11 +6,11 @@ from anki.decks import DeckManager
 
 class CollectionWrapper:
     collection: Collection
-    deck: DeckManager | None
 
     def __init__(self, file_path):
         self.collection = self.__read_collection_file(file_path)
         self.deck = None
+        self.card = None
 
     def generate_welcome_message(self):
         data = self.__get_due()
@@ -42,12 +42,28 @@ class CollectionWrapper:
         if not self.deck:
             return 'No deck selected.'
 
-        card = self.collection.sched.getCard()
+        self.card = self.collection.sched.getCard()
 
-        if not card:
+        if not self.card:
             return 'No cards left.'
 
-        return card.note().fields[0]
+        return self.card.note().fields[0]
+
+    def verify_answer(self, answer):
+        if not self.card:
+            return 'There is no card to respond to.'
+
+        answer = answer.strip()
+        expected = self.card.note().fields[1]
+
+        if answer == expected:
+            self.collection.sched.answerCard(self.card, 1)
+            self.card = None
+            return 'Correct'
+        else:
+            self.collection.sched.answerCard(self.card, 4)
+            self.card = None
+            return f'Incorrect: {expected}'
 
     def __read_collection_file(self, file_path):
         if file_path.split('.')[-1] != 'anki2':

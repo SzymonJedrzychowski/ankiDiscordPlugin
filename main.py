@@ -26,14 +26,16 @@ def main():
 
         content = message.content
 
-        if content.startswith('$hello'):
+        if content.startswith('!hello'):
             to_send = collection_wrapper.generate_welcome_message()
-        elif content.startswith('$decks'):
+        elif content.startswith('!decks'):
             to_send = collection_wrapper.generate_decks_message()
-        elif content.startswith('$deck'):
+        elif content.startswith('!deck'):
             to_send = collection_wrapper.select_deck(content[5:])
-        elif content.startswith('$card'):
+        elif content.startswith('!card'):
             to_send = collection_wrapper.get_card()
+        elif content.startswith('!!'):
+            to_send = collection_wrapper.verify_answer(content[2:])
 
         if to_send:
             await message.channel.send(to_send)
